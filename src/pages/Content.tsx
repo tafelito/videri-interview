@@ -15,14 +15,7 @@ import FolderIcon from '@material-ui/icons/Folder';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { grey } from '@material-ui/core/colors';
-import {
-  Switch,
-  Route,
-  Link as RouterLink,
-  matchPath,
-  useLocation,
-} from 'react-router-dom';
-import clsx from 'clsx';
+import { Switch, Route, NavLink } from 'react-router-dom';
 
 import ContentGridList from 'components/ContentGridList';
 
@@ -37,9 +30,6 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       flexGrow: 1,
     },
-    // buttonRoot: {
-    //   color: grey[500],
-    // },
     button: {
       color: grey[500],
     },
@@ -54,7 +44,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function Content() {
   const classes = useStyles();
-  const location = useLocation();
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -88,15 +77,12 @@ export default function Content() {
           <Grid container spacing={4}>
             <Grid item>
               <Button
-                className={clsx(
-                  classes.button,
-                  matchPath(location.pathname, '/clouds') &&
-                    classes.buttonActive,
-                )}
+                className={classes.button}
+                activeClassName={classes.buttonActive}
                 classes={{
                   label: classes.buttonLabel,
                 }}
-                component={RouterLink}
+                component={NavLink}
                 to="/clouds"
               >
                 <FolderIcon fontSize="large" />
@@ -105,14 +91,12 @@ export default function Content() {
             </Grid>
             <Grid item>
               <Button
-                className={clsx(
-                  classes.button,
-                  matchPath(location.pathname, '/cars') && classes.buttonActive,
-                )}
+                className={classes.button}
+                activeClassName={classes.buttonActive}
                 classes={{
                   label: classes.buttonLabel,
                 }}
-                component={RouterLink}
+                component={NavLink}
                 to="/cars"
               >
                 <FolderIcon fontSize="large" />
@@ -121,15 +105,12 @@ export default function Content() {
             </Grid>
             <Grid item>
               <Button
-                className={clsx(
-                  classes.button,
-                  matchPath(location.pathname, '/urban') &&
-                    classes.buttonActive,
-                )}
+                className={classes.button}
+                activeClassName={classes.buttonActive}
                 classes={{
                   label: classes.buttonLabel,
                 }}
-                component={RouterLink}
+                component={NavLink}
                 to={{
                   pathname: '/urban',
                   search: '?type=videos',
