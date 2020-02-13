@@ -9,6 +9,7 @@ import {
 
 import { fakeAuth } from 'utils/auth';
 import Login from 'Login';
+import Content from 'Content';
 
 const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
   return (
@@ -37,7 +38,9 @@ const App: React.FC = () => {
         <Route path="/login">
           <Login />
         </Route>
-        <PrivateRoute path="/">Home</PrivateRoute>
+        <PrivateRoute path="/">
+          <Content />
+        </PrivateRoute>
       </Switch>
     </BrowserRouter>
   );
