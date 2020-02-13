@@ -8,8 +8,8 @@ import {
 } from 'react-router-dom';
 
 import { fakeAuth } from 'utils/auth';
-import Login from 'Login';
-import Content from 'Content';
+import Login from 'pages/Login';
+import Content from 'pages/Content';
 
 const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
   return (
