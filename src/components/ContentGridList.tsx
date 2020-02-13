@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
@@ -10,8 +10,11 @@ import ImageIcon from '@material-ui/icons/Image';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import Pagination from '@material-ui/lab/Pagination';
 import PaginationItem from '@material-ui/lab/PaginationItem';
-import { Link, useLocation, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+
 import { REGEX_DATE } from 'utils/regex';
+import { useQuery } from 'hooks/use-query';
+import { useFetchContent } from 'hooks/use-fetch-content';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -37,10 +40,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 export default function ContentGridList() {
   const classes = useStyles();
   const query = useQuery();
@@ -50,54 +49,14 @@ export default function ContentGridList() {
   const type = query.get('type');
   // get page from query parameters or go to page 1
   const page = Number(query.get('page') || 1);
-  const perPage = 48;
+  // const perPage = 48;
 
-  const [{ data, loading, error }, setState] = useState<{
-    data?: any;
-    error?: string;
-    loading: boolean;
-  }>({
-    data: undefined,
-    error: undefined,
-    loading: true,
+  const isVideo = type === 'videos';
+  const { data, loading, error } = useFetchContent({
+    q,
+    page,
+    type: isVideo ? type! : '',
   });
-
-  useEffect(() => {
-    setState(state => ({ ...state, error: undefined, loading: true }));
-    // pixabay API url (if type = video it will search for video content)
-    const api_url = `https://pixabay.com/api/${type || ''}`;
-    // using they key from .env doesn't hide the key from the source
-    // if the key should not be public, then this has to be moved somewhere else (server)
-    fetch(
-      `${api_url}?key=${process.env.REACT_APP_PIXABAY_API}&q=${q}&image_type=photo&page=${page}&per_page=${perPage}&safesearch=true`,
-    )
-      .then(async response => {
-        if (response.status === 200) {
-          const res = await response.json();
-          setState(state => ({
-            ...state,
-            data: res,
-            loading: false,
-          }));
-        } else {
-          // The Promise returned from fetch() won't reject on HTTP error status even if the response is an HTTP 404 or 500.
-          // Instead, it will resolve normally, and it will only reject on network failure or if anything prevented the request from completing.
-          // https://github.com/github/fetch#caveats
-          setState({
-            data: undefined,
-            error: `Error fetching content: ${response.statusText}`,
-            loading: false,
-          });
-        }
-      })
-      .catch(error => {
-        setState({
-          data: undefined,
-          error: `Error fetching content: ${error.message}`,
-          loading: false,
-        });
-      });
-  }, [type, q, page]);
 
   return (
     <div className={classes.root}>
@@ -114,24 +73,44 @@ export default function ContentGridList() {
               <ListSubheader component="div">Content</ListSubheader>
             </GridListTile>
             {data.hits.map((content: any) => {
+              const imageSrc = isVideo
+                ? `https://i.vimeocdn.com/video/${content.picture_id}_640x360.jpg`
+                : content.webformatURL;
+
+              const dateURL = content.previewURL || content.userImageURL;
+
+              let size;
+              if (isVideo) {
+                const {
+                  videos: {
+                    medium: { width, height },
+                  },
+                } = content;
+                size = {
+                  width,
+                  height,
+                };
+              } else {
+                const { imageWidth: width, imageHeight: height } = content;
+                size = {
+                  width,
+                  height,
+                };
+              }
               return (
                 <GridListTile key={content.id}>
-                  <img src={content.webformatURL} alt={content.tags} />
+                  <img src={imageSrc} alt={content.tags} />
                   <GridListTileBar
                     classes={{ rootSubtitle: classes.subtitle }}
-                    title={content.webformatURL.substring(
-                      content.webformatURL.lastIndexOf('/') + 1,
-                    )}
+                    title={imageSrc.substring(imageSrc.lastIndexOf('/') + 1)}
                     subtitle={
                       <Grid container spacing={2} direction="column">
-                        <Grid
-                          item
-                        >{`${content.imageWidth} x ${content.imageHeight}`}</Grid>
+                        <Grid item>{`${size.width} x ${size.height}`}</Grid>
                         <Grid item>
                           <div>
                             <Typography variant="caption">Created</Typography>
                           </div>
-                          {content.previewURL.match(REGEX_DATE)[0]}
+                          {dateURL !== '' && dateURL?.match(REGEX_DATE)[0]}
                         </Grid>
                       </Grid>
                     }
