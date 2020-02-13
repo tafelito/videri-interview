@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import IconButton from '@material-ui/core/IconButton';
-import { Grid, Typography, Box, CircularProgress } from '@material-ui/core';
+import {
+  Grid,
+  Typography,
+  Box,
+  CircularProgress,
+  Card,
+  CardActionArea,
+  CardMedia,
+} from '@material-ui/core';
 import ImageIcon from '@material-ui/icons/Image';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import Pagination from '@material-ui/lab/Pagination';
@@ -15,6 +23,7 @@ import { Link, useParams } from 'react-router-dom';
 import { REGEX_DATE } from 'utils/regex';
 import { useQuery } from 'hooks/use-query';
 import { useFetchContent } from 'hooks/use-fetch-content';
+import ContentDialog from 'components/ContentDialog';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,6 +43,9 @@ const useStyles = makeStyles((theme: Theme) =>
     icon: {
       color: 'rgba(255, 255, 255, 0.54)',
     },
+    media: {
+      height: 250,
+    },
     subtitle: {
       height: 90,
     },
@@ -49,7 +61,11 @@ export default function ContentGridList() {
   const type = query.get('type');
   // get page from query parameters or go to page 1
   const page = Number(query.get('page') || 1);
-  // const perPage = 48;
+
+  const [open, setOpen] = useState(false);
+  const [selectedContent, setSelectedContent] = useState<
+    { title: string; media: 'video' | 'img'; src: string } | undefined
+  >();
 
   const isVideo = type === 'videos';
   const { data, loading, error } = useFetchContent({
@@ -57,6 +73,15 @@ export default function ContentGridList() {
     page,
     type: isVideo ? type! : '',
   });
+  console.log('TCL: ContentGridList -> data', data);
+
+  function handleClickOpen() {
+    setOpen(true);
+  }
+
+  function handleClose() {
+    setOpen(false);
+  }
 
   return (
     <div className={classes.root}>
@@ -78,6 +103,7 @@ export default function ContentGridList() {
                 : content.webformatURL;
 
               const dateURL = content.previewURL || content.userImageURL;
+              const title = imageSrc.substring(imageSrc.lastIndexOf('/') + 1);
 
               let size;
               if (isVideo) {
@@ -99,10 +125,27 @@ export default function ContentGridList() {
               }
               return (
                 <GridListTile key={content.id}>
-                  <img src={imageSrc} alt={content.tags} />
+                  <Card>
+                    <CardActionArea
+                      onClick={() => {
+                        setSelectedContent({
+                          media: isVideo ? 'video' : 'img',
+                          src: isVideo ? content.videos.large.url : imageSrc,
+                          title,
+                        });
+                        handleClickOpen();
+                      }}
+                    >
+                      <CardMedia
+                        className={classes.media}
+                        image={imageSrc}
+                        title={title}
+                      />
+                    </CardActionArea>
+                  </Card>
                   <GridListTileBar
                     classes={{ rootSubtitle: classes.subtitle }}
-                    title={imageSrc.substring(imageSrc.lastIndexOf('/') + 1)}
+                    title={title}
                     subtitle={
                       <Grid container spacing={2} direction="column">
                         <Grid item>{`${size.width} x ${size.height}`}</Grid>
@@ -115,7 +158,10 @@ export default function ContentGridList() {
                       </Grid>
                     }
                     actionIcon={
-                      <IconButton className={classes.icon}>
+                      <IconButton
+                        className={classes.icon}
+                        onClick={handleClickOpen}
+                      >
                         {!type ? <ImageIcon /> : <VideocamIcon />}
                       </IconButton>
                     }
@@ -144,6 +190,13 @@ export default function ContentGridList() {
               )}
             />
           </Box>
+          {selectedContent && (
+            <ContentDialog
+              {...selectedContent}
+              open={open}
+              onClose={handleClose}
+            />
+          )}
         </>
       )}
     </div>
