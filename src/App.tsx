@@ -1,33 +1,46 @@
 import React from 'react';
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Link from '@material-ui/core/Link';
-import ProTip from './ProTip';
+import {
+  BrowserRouter,
+  Route,
+  Switch,
+  RouteProps,
+  Redirect,
+} from 'react-router-dom';
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { fakeAuth } from 'utils/auth';
+import Login from 'Login';
 
-export default function App() {
+const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
   return (
-    <Container maxWidth="sm">
-      <Box my={4}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Create React App v4-beta example with TypeScript
-        </Typography>
-        <ProTip />
-        <Copyright />
-      </Box>
-    </Container>
+    <Route
+      {...rest}
+      render={({ location }) =>
+        fakeAuth.isAuthenticated ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/login',
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
   );
-}
+};
+
+const App: React.FC = () => {
+  return (
+    <BrowserRouter>
+      <Switch>
+        <Route path="/login">
+          <Login />
+        </Route>
+        <PrivateRoute path="/">Home</PrivateRoute>
+      </Switch>
+    </BrowserRouter>
+  );
+};
+
+export default App;
