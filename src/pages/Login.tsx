@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { REGEX_EMAIL, REGEX_PASSWORD } from 'utils/regex';
 import { fakeAuth } from 'utils/auth';
 import { useHistory } from 'react-router-dom';
+import LoginForm from 'components/LoginForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,41 +34,20 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(1),
       backgroundColor: theme.palette.secondary.main,
     },
-    form: {
-      width: '100%', // Fix IE 11 issue.
-      marginTop: theme.spacing(1),
-    },
-    submit: {
-      margin: theme.spacing(3, 0, 2),
-    },
   }),
 );
 
 export default function Login() {
   const classes = useStyles();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState();
   const history = useHistory();
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    //validate email
-    const isEmailValid = RegExp(REGEX_EMAIL).test(email);
-    //validate password
-    const isPasswordValid = RegExp(REGEX_PASSWORD).test(password);
-
-    const errors = {
-      ...(!isEmailValid && { email: 'Invalid email' }),
-      ...(!isPasswordValid && { password: 'Invalid password' }),
-    };
-
-    if (!isEmailValid || !isPasswordValid) {
-      setErrors(errors);
-      return;
-    }
-
+  async function handleSubmit({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) {
     await fakeAuth.authenticate();
     history.replace('/');
   }
@@ -86,50 +63,7 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate onSubmit={handleSubmit}>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              error={!!errors?.email}
-              helperText={errors?.email}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              error={!!errors?.password}
-              helperText={errors?.password}
-            />
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                >
-                  Sign In
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
+          <LoginForm onSubmit={handleSubmit} />
         </div>
       </Grid>
     </Grid>

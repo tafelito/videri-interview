@@ -17,7 +17,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import { grey } from '@material-ui/core/colors';
 import { Switch, Route, NavLink } from 'react-router-dom';
 
-import ContentGridList from 'components/ContentGridList';
+import ContentData from 'components/ContentData';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -116,7 +116,7 @@ export default function Content() {
           </Grid>
         </Box>
         <Switch>
-          <Route path="/:q" children={<ContentGridList />} />
+          <Route path="/:q" children={<ContentData />} />
         </Switch>
       </Container>
     </div>

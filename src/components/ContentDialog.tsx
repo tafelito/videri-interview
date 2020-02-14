@@ -1,26 +1,21 @@
 import React from 'react';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
-import { Card, CardMedia } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles({
-  title: {
-    wordBreak: 'break-all',
-  },
-});
+import { Card, CardMedia, CardHeader, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
+import { Preview } from './ContentGridList';
 
 export interface ContentDialogProps {
   open: boolean;
   onClose: () => void;
-  title: string;
-  media: 'video' | 'img';
-  src: string;
+  preview: Preview;
 }
 
 export default function ContentDialog(props: ContentDialogProps) {
-  const classes = useStyles();
-  const { onClose, open, title, media, src } = props;
+  const {
+    onClose,
+    open,
+    preview: { title, media, src },
+  } = props;
 
   return (
     <Dialog
@@ -28,13 +23,19 @@ export default function ContentDialog(props: ContentDialogProps) {
       aria-labelledby="content-dialog-title"
       open={open}
     >
-      <DialogTitle id="content-dialog-title" className={classes.title}>
-        {title}
-      </DialogTitle>
       <Card>
+        <CardHeader
+          action={
+            <IconButton aria-label="close" onClick={onClose}>
+              <CloseIcon />
+            </IconButton>
+          }
+          title={title}
+        />
         <CardMedia
           component={media}
           src={src}
+          alt={title}
           title={title}
           controls={media === 'video'}
         />
