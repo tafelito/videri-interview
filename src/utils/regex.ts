@@ -4,3 +4,6 @@ export const REGEX_EMAIL = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\
 export const REGEX_PASSWORD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 // eslint-disable-next-line
 export const REGEX_DATE = /(19|20)\d{2}[\/](0[1-9]|1[0-2])[\/](0[1-9]|[12]\d|3[01])/;
+
+// eslint-disable-next-line
+export const REGEX_FILENAME = /[^\/]+((?=\?[^\/.]*$)|(?=\.[^\/.]*$)\.\w{3,})/i;

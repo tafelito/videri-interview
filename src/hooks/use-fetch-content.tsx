@@ -6,15 +6,15 @@ interface State {
   error?: string;
 }
 
-function reducer(state: State, newState: Partial<State>): State {
-  return { ...state, ...newState };
-}
-
-const initialState = {
+const initialState: State = {
   loading: true,
   data: undefined,
   error: undefined,
 };
+
+function reducer(state: State, newState: Partial<State>): State {
+  return { ...state, ...newState };
+}
 
 export function useFetchContent({
   q = '',

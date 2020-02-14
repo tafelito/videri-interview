@@ -20,7 +20,7 @@ import Pagination from '@material-ui/lab/Pagination';
 import PaginationItem from '@material-ui/lab/PaginationItem';
 import { Link, useParams } from 'react-router-dom';
 
-import { REGEX_DATE } from 'utils/regex';
+import { REGEX_DATE, REGEX_FILENAME } from 'utils/regex';
 import { useQuery } from 'hooks/use-query';
 import { useFetchContent } from 'hooks/use-fetch-content';
 import ContentDialog from 'components/ContentDialog';
@@ -52,6 +52,24 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+function getFileName(content: any) {
+  if (content.previewURL) {
+    return content.previewURL.match(REGEX_FILENAME)[0];
+  }
+
+  if (content.videos) {
+    // get the url from the first size that has an url
+    const videoUrl = Object.keys(content.videos).find(
+      key => content.videos[key].url !== '',
+    );
+
+    if (videoUrl) {
+      return content.videos[videoUrl].url.match(REGEX_FILENAME)[0];
+    }
+  }
+  return 'N/A';
+}
+
 export default function ContentGridList() {
   const classes = useStyles();
   const query = useQuery();
@@ -73,7 +91,6 @@ export default function ContentGridList() {
     page,
     type: isVideo ? type! : '',
   });
-  console.log('TCL: ContentGridList -> data', data);
 
   function handleClickOpen() {
     setOpen(true);
@@ -82,6 +99,20 @@ export default function ContentGridList() {
   function handleClose() {
     setOpen(false);
   }
+
+  const hits = data?.hits.sort(function(a: any, b: any) {
+    var nameA = getFileName(a).toUpperCase(); // ignore upper and lowercase
+    var nameB = getFileName(b).toUpperCase(); // ignore upper and lowercase
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+
+    // names must be equal
+    return 0;
+  });
 
   return (
     <div className={classes.root}>
@@ -97,13 +128,13 @@ export default function ContentGridList() {
             <GridListTile key="Subheader" cols={4} style={{ height: 'auto' }}>
               <ListSubheader component="div">Content</ListSubheader>
             </GridListTile>
-            {data.hits.map((content: any) => {
+            {hits.map((content: any) => {
               const imageSrc = isVideo
                 ? `https://i.vimeocdn.com/video/${content.picture_id}_640x360.jpg`
                 : content.webformatURL;
 
               const dateURL = content.previewURL || content.userImageURL;
-              const title = imageSrc.substring(imageSrc.lastIndexOf('/') + 1);
+              const title = getFileName(content);
 
               let size;
               if (isVideo) {
