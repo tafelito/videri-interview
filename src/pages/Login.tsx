@@ -68,6 +68,7 @@ export default function Login() {
 
     if (!isEmailValid || !isPasswordValid) {
       setErrors(errors);
+      return;
     }
 
     await fakeAuth.authenticate();
