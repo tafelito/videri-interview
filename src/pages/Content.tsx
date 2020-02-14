@@ -42,6 +42,25 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+const folders = [
+  {
+    id: 1,
+    name: 'clouds',
+    label: 'Clouds',
+  },
+  {
+    id: 2,
+    name: 'cars',
+    label: 'Cars',
+  },
+  {
+    id: 3,
+    name: 'urban',
+    label: 'Urban',
+    type: 'videos',
+  },
+];
+
 export default function Content() {
   const classes = useStyles();
   return (
@@ -75,51 +94,25 @@ export default function Content() {
       <Container maxWidth={false}>
         <Box my={2}>
           <Grid container spacing={4}>
-            <Grid item>
-              <Button
-                className={classes.button}
-                activeClassName={classes.buttonActive}
-                classes={{
-                  label: classes.buttonLabel,
-                }}
-                component={NavLink}
-                to="/clouds"
-              >
-                <FolderIcon fontSize="large" />
-                Clouds
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                className={classes.button}
-                activeClassName={classes.buttonActive}
-                classes={{
-                  label: classes.buttonLabel,
-                }}
-                component={NavLink}
-                to="/cars"
-              >
-                <FolderIcon fontSize="large" />
-                Cars
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                className={classes.button}
-                activeClassName={classes.buttonActive}
-                classes={{
-                  label: classes.buttonLabel,
-                }}
-                component={NavLink}
-                to={{
-                  pathname: '/urban',
-                  search: '?type=videos',
-                }}
-              >
-                <FolderIcon fontSize="large" />
-                Urban (Videos)
-              </Button>
-            </Grid>
+            {folders.map(({ id, name, label, type }) => (
+              <Grid key={id} item>
+                <Button
+                  className={classes.button}
+                  activeClassName={classes.buttonActive}
+                  classes={{
+                    label: classes.buttonLabel,
+                  }}
+                  component={NavLink}
+                  to={{
+                    pathname: `/${name}`,
+                    ...(type && { search: `?type=${type}` }),
+                  }}
+                >
+                  <FolderIcon fontSize="large" />
+                  {label}
+                </Button>
+              </Grid>
+            ))}
           </Grid>
         </Box>
         <Switch>
