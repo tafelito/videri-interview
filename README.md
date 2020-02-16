@@ -52,11 +52,11 @@ For the login I used a simple form and handle validation manually. For this demo
 
 ### Data fetch
 
-Content loaded from the API is fetched every time a folder or a page is changed. This might no be desired in case data does not change often. In that case, data could be saved locally or cached to prevent fetching the server constantly. Another option could be show stale data and refresh in the background.
+To fetch content from the Pixabay API, I used `SWR` from zeit. This allows to show cached data (stale) then fetch to revalidate and then update the cache with the latest data.
 
-### Progress image loading
+### Image loading optimization
 
-Usually while dealing with images something like progress image loading could be implemented as an optimization
+Loading image could be optimized in some cases. Since each folder is only loading up to 50 images it didn't make sense to implement lazy loading using Intersection Observer API or even using the new native lazy-loading.
 
 ### Material-ui
 

@@ -21,7 +21,7 @@ describe('useFetchContent hook', () => {
     const perPage = 50;
     const api_url = `${process.env.REACT_APP_PIXABAY_API_URL}`;
     const url = `${api_url}?key=${process.env.REACT_APP_PIXABAY_API_KEY}&q=${q}&image_type=photo&page=${page}&per_page=${perPage}&safesearch=true`;
-    const expectedData = { some: 'data' }; // we define some data the server will be returning
+    const expectedData = { some: 'data' }; // define some data the server will be returning
     // setup the server
     server.respondWith('GET', url, [200, {}, JSON.stringify(expectedData)]);
 

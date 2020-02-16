@@ -6,10 +6,11 @@ import PaginationItem from '@material-ui/lab/PaginationItem';
 import { Link, useParams } from 'react-router-dom';
 
 import { useQuery } from 'hooks/use-query';
-import { useFetchContent } from 'hooks/use-fetch-content';
 import ContentDialog from 'components/ContentDialog';
-import ContentGridList, { Preview } from './ContentGridList';
+import ContentGridList from './ContentGridList';
 import { getFileName } from 'utils/utils';
+import { Preview } from 'utils/types';
+import { useFetchContent } from 'hooks/use-fetch-content';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,7 +43,7 @@ export default function ContentData() {
   // get the search term from the url
   const { q } = useParams();
   // get type of content to search from query parameters
-  const type = query.get('type');
+  const type = query.get('type') || '';
   // get page from query parameters or go to page 1
   const page = Number(query.get('page') || 1);
 
@@ -50,10 +51,12 @@ export default function ContentData() {
   const [selectedContent, setSelectedContent] = useState<Preview | undefined>();
 
   const isVideo = type === 'videos';
+  const perPage = 48;
   const { data, loading, error } = useFetchContent({
-    q,
     page,
-    type: isVideo ? type! : '',
+    perPage,
+    q,
+    type: isVideo ? type : '',
   });
 
   function handleClickOpen(preview: Preview) {

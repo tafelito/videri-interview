@@ -2,7 +2,7 @@ import React from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import { Card, CardMedia, CardHeader, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { Preview } from './ContentGridList';
+import { Preview } from 'utils/types';
 
 export interface ContentDialogProps {
   open: boolean;

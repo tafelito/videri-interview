@@ -4,34 +4,23 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import IconButton from '@material-ui/core/IconButton';
-import {
-  Grid,
-  Typography,
-  Card,
-  CardActionArea,
-  CardMedia,
-  Box,
-} from '@material-ui/core';
+import { Grid, Typography, Box } from '@material-ui/core';
 import ImageIcon from '@material-ui/icons/Image';
 import VideocamIcon from '@material-ui/icons/Videocam';
 
 import { REGEX_DATE } from 'utils/regex';
 import { getFileName } from 'utils/utils';
+import { Preview } from 'utils/types';
+import ContentMedia from './ContentMedia';
 
-const useStyles = makeStyles(() =>
+export const useStyles = makeStyles(() =>
   createStyles({
     gridList: {
       width: '100%',
     },
     icon: {
       color: 'rgba(255, 255, 255, 0.54)',
-    },
-    action: {
-      display: 'block'
-    },
-    media: {
-      height: 250,
+      padding: 12,
     },
     subtitle: {
       height: 90,
@@ -55,11 +44,6 @@ interface Content {
     };
   };
 }
-export interface Preview {
-  media: 'video' | 'img';
-  src: string;
-  title: string;
-}
 
 interface Props {
   content?: any[];
@@ -73,10 +57,6 @@ export default function ContentGridList({
   onSelectContent,
 }: Props) {
   const classes = useStyles();
-
-  const handleClick = (preview: Preview) => () => {
-    onSelectContent && onSelectContent(preview);
-  };
 
   return (
     <GridList cellHeight={250} className={classes.gridList} cols={4}>
@@ -119,24 +99,15 @@ export default function ContentGridList({
         const preview: Preview = {
           media: isVideo ? 'video' : 'img',
           src: content.videos?.large.url || imageSrc || '',
+          previewSrc: imageSrc,
           title,
         };
 
+        const Icon = !isVideo ? ImageIcon : VideocamIcon;
+
         return (
           <GridListTile key={content.id} data-testid="content-data">
-            <Card>
-              <CardActionArea
-                onClick={handleClick(preview)}
-                data-testid="content-action"
-                className={classes.action}
-              >
-                <CardMedia
-                  className={classes.media}
-                  image={imageSrc}
-                  title={title}
-                />
-              </CardActionArea>
-            </Card>
+            <ContentMedia {...{ preview, onSelectContent }} />
             <GridListTileBar
               classes={{ rootSubtitle: classes.subtitle }}
               title={title}
@@ -152,12 +123,9 @@ export default function ContentGridList({
                 </Grid>
               }
               actionIcon={
-                <IconButton
-                  className={classes.icon}
-                  onClick={handleClick(preview)}
-                >
-                  {!isVideo ? <ImageIcon /> : <VideocamIcon />}
-                </IconButton>
+                <div className={classes.icon}>
+                  <Icon />
+                </div>
               }
             />
           </GridListTile>
