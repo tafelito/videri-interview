@@ -27,6 +27,9 @@ const useStyles = makeStyles(() =>
     icon: {
       color: 'rgba(255, 255, 255, 0.54)',
     },
+    action: {
+      display: 'block'
+    },
     media: {
       height: 250,
     },
@@ -76,7 +79,7 @@ export default function ContentGridList({
   };
 
   return (
-    <GridList cellHeight="auto" className={classes.gridList} cols={4}>
+    <GridList cellHeight={250} className={classes.gridList} cols={4}>
       <GridListTile key="Subheader" cols={4} style={{ height: 'auto' }}>
         <ListSubheader component="div">Content</ListSubheader>
       </GridListTile>
@@ -125,6 +128,7 @@ export default function ContentGridList({
               <CardActionArea
                 onClick={handleClick(preview)}
                 data-testid="content-action"
+                className={classes.action}
               >
                 <CardMedia
                   className={classes.media}
