@@ -99,7 +99,7 @@ export default function ContentData() {
           />
           <Box my={2}>
             <Pagination
-              count={data?.totalHits}
+              count={Math.ceil(data?.totalHits / perPage)}
               page={page}
               color="primary"
               renderItem={(item: any) => (
